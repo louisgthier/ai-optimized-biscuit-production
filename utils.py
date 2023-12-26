@@ -27,8 +27,14 @@ for x in range(dough_length):
         defect_counts[x] = {"a": 0, "b": 0, "c": 0}
 
 def check_solution(sol):
+    last_position_with_biscuit = -1
     sol = sorted(sol, key=lambda x: x[0])
     value = 0
+
+    valid_sol = []
+
+    is_valid = True
+
     for i, (x, y) in enumerate(sol):
         biscuit_valid = True
 
@@ -45,7 +51,7 @@ def check_solution(sol):
                 for k in defect_counts[j]:
                     defect_counts_for_biscuit[k] += defect_counts[j][k]
         
-        if i != 0 and x <= sol[i - 1][0] + biscuits[sol[i - 1][1]]["length"] - 1:
+        if x <= last_position_with_biscuit:
             print("Biscuits overlap", x, y)
             biscuit_valid = False
 
@@ -53,11 +59,17 @@ def check_solution(sol):
             if defect_counts_for_biscuit[k] > biscuits[y]["defects"][k]:
                 print("Defects don't match", x, y, k, defect_counts_for_biscuit, biscuits[y]["defects"])
                 biscuit_valid = False
-
+        
         if biscuit_valid:
+            last_position_with_biscuit = x + biscuits[y]["length"] - 1
             value += biscuits[y]["value"]
+            valid_sol.append((x, y))
+        else:
+            is_valid = False
 
-    return value
+    return value, valid_sol, is_valid
+
+
 
 def save_solution(sol, filename):
     with open(filename, "w") as f:
