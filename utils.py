@@ -26,7 +26,7 @@ for x in range(dough_length):
     if x not in defect_counts:
         defect_counts[x] = {"a": 0, "b": 0, "c": 0}
 
-def check_solution(sol):
+def check_solution(sol, debug=False):
     last_position_with_biscuit = -1
     sol = sorted(sol, key=lambda x: x[0])
     value = 0
@@ -39,10 +39,12 @@ def check_solution(sol):
         biscuit_valid = True
 
         if x < 0:
-            print("Negative x", x, y)
+            if debug:
+                print("Negative x", x, y)
             biscuit_valid = False
         if x + biscuits[y]["length"] > dough_length:
-            print("Biscuit too long", x, y)
+            if debug:
+                print("Biscuit too long", x, y)
             biscuit_valid = False
         
         defect_counts_for_biscuit = {"a": 0, "b": 0, "c": 0}
@@ -52,12 +54,14 @@ def check_solution(sol):
                     defect_counts_for_biscuit[k] += defect_counts[j][k]
         
         if x <= last_position_with_biscuit:
-            print("Biscuits overlap", x, y)
+            if debug:
+                print("Biscuits overlap", x, y)
             biscuit_valid = False
 
         for k in defect_counts_for_biscuit:
             if defect_counts_for_biscuit[k] > biscuits[y]["defects"][k]:
-                print("Defects don't match", x, y, k, defect_counts_for_biscuit, biscuits[y]["defects"])
+                if debug:
+                    print("Defects don't match", x, y, k, defect_counts_for_biscuit, biscuits[y]["defects"])
                 biscuit_valid = False
         
         if biscuit_valid:
