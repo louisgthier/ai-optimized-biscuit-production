@@ -36,16 +36,16 @@ def check_solution(sol, debug=False):
     is_valid = True
 
     for i, (x, y) in enumerate(sol):
-        biscuit_valid = True
-
         if x < 0:
             if debug:
                 print("Negative x", x, y)
-            biscuit_valid = False
+            is_valid = False
+            continue
         if x + biscuits[y]["length"] > dough_length:
             if debug:
                 print("Biscuit too long", x, y)
-            biscuit_valid = False
+            is_valid = False
+            continue
         
         defect_counts_for_biscuit = {"a": 0, "b": 0, "c": 0}
         for j in range(x, x + biscuits[y]["length"]):
@@ -56,20 +56,25 @@ def check_solution(sol, debug=False):
         if x <= last_position_with_biscuit:
             if debug:
                 print("Biscuits overlap", x, y)
-            biscuit_valid = False
+            is_valid = False
+            continue
 
+        defects_match = True
         for k in defect_counts_for_biscuit:
             if defect_counts_for_biscuit[k] > biscuits[y]["defects"][k]:
                 if debug:
                     print("Defects don't match", x, y, k, defect_counts_for_biscuit, biscuits[y]["defects"])
-                biscuit_valid = False
+                defects_match = False
+                break
         
-        if biscuit_valid:
-            last_position_with_biscuit = x + biscuits[y]["length"] - 1
-            value += biscuits[y]["value"]
-            valid_sol.append((x, y))
-        else:
+        if not defects_match:
             is_valid = False
+            continue
+                
+        
+        last_position_with_biscuit = x + biscuits[y]["length"] - 1
+        value += biscuits[y]["value"]
+        valid_sol.append((x, y))
 
     return value, valid_sol, is_valid
 
